@@ -33,7 +33,7 @@ interface SimpleDomain {
 
 // IMPORTANT: Replace with your actual Supabase Edge Functions URL
 // You can find this in your Supabase project settings under Functions -> Settings
-const SUPABASE_FUNCTIONS_URL = 'YOUR_SUPABASE_FUNCTIONS_URL_HERE'; 
+const SUPABASE_FUNCTIONS_URL = 'https://bvxceienrftnimcdtbom.supabase.co/functions/v1'; 
 
 function App() {
   const [user, setUser] = useState<any>(null)
