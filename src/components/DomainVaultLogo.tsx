@@ -1,60 +1,13 @@
-import React from 'react'
-import { Globe, Shield, Lock } from 'lucide-react'
+// src/components/DomainVaultLogo.tsx
 
-interface DomainVaultLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  variant?: 'full' | 'icon-only'
-  className?: string
-}
+const DomainVaultLogo = () => (
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M2 7L12 12L22 7" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 22V12" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M20 15.5L12 12L4 15.5" stroke="#818CF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 12L12 2" stroke="#818CF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
+    </svg>
+);
 
-const sizeClasses = {
-  sm: 'h-8 w-8',
-  md: 'h-12 w-12', 
-  lg: 'h-16 w-16',
-  xl: 'h-20 w-20'
-}
-
-const DomainVaultLogo: React.FC<DomainVaultLogoProps> = ({ 
-  size = 'md', 
-  variant = 'full',
-  className = '' 
-}) => {
-  const iconSize = sizeClasses[size]
-  
-  const LogoIcon = () => (
-    <div className={`relative ${iconSize} ${className}`}>
-      {/* Outer ring with gradient */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-400 p-0.5">
-        <div className="h-full w-full rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-          {/* Inner content */}
-          <div className="relative">
-            {/* Globe base */}
-            <Globe className="h-6 w-6 text-white" />
-            {/* Shield overlay */}
-            <Shield className="absolute -top-1 -right-1 h-4 w-4 text-cyan-300" />
-            {/* Lock accent */}
-            <Lock className="absolute -bottom-0.5 -left-0.5 h-3 w-3 text-purple-300" />
-          </div>
-        </div>
-      </div>
-      
-      {/* Animated pulse ring */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-cyan-400 opacity-20 animate-pulse"></div>
-    </div>
-  )
-
-  if (variant === 'icon-only') {
-    return <LogoIcon />
-  }
-
-  return (
-    <div className={`flex items-center ${className}`}>
-      <LogoIcon />
-      {size !== 'sm' && (
-        <span className="ml-3 text-white font-bold text-2xl">DomainVault</span>
-      )}
-    </div>
-  )
-}
-
-export default DomainVaultLogo
+export default DomainVaultLogo;

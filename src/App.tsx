@@ -1,29 +1,25 @@
 // src/App.tsx
 
 import { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient'; // Make sure this path is correct
+import { supabase } from './supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
 // Import your components
-import SellerAuth from './components/auth/SellerAuth';
+import AuthLayout from './components/auth/AuthLayout'; // <-- THIS IS YOUR CUSTOM AUTH COMPONENT
 import ListDomainForm from './components/ListDomainForm';
 import SellerDashboard from './components/SellerDashboard';
-import { DomainVaultLogo } from './components/DomainVaultLogo'; // Assuming you have a logo component
+import DomainVaultLogo from './components/DomainVaultLogo';
 
 function App() {
-  // This state will hold the user's session information if they are logged in
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // This useEffect hook runs once when the component mounts
   useEffect(() => {
-    // Check for an active session right away
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
 
-    // Listen for changes in authentication state (user logs in or logs out)
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
@@ -31,13 +27,11 @@ function App() {
       }
     );
 
-    // Cleanup function to remove the listener when the component unmounts
     return () => {
       authListener?.subscription.unsubscribe();
     };
   }, []);
 
-  // Show a loading indicator while we check for a session
   if (loading) {
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
@@ -51,7 +45,7 @@ function App() {
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
         
         <header className="text-center mb-12">
-          <DomainVaultLogo /> {/* Your logo component */}
+          <DomainVaultLogo />
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mt-4">
             DomainVault Marketplace
           </h1>
@@ -59,9 +53,9 @@ function App() {
         </header>
 
         <main>
-          {/* If there is no session, show the authentication form */}
+          {/* If there is no session, show your custom authentication layout */}
           {!session ? (
-            <SellerAuth />
+            <AuthLayout /> // <-- THIS LINE IS NOW CORRECT
           ) : (
           /* If the user is logged in, show the seller portal */
             <div className="space-y-12">

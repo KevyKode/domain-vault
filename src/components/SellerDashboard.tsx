@@ -1,7 +1,7 @@
 // src/components/SellerDashboard.tsx
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../supabaseClient'; // Ensure this path is correct
+import { supabase } from '../supabaseClient';
 
 interface Domain {
   id: number;
@@ -27,7 +27,6 @@ const SellerDashboard = () => {
         return;
       }
 
-      // First, get the seller_id from the 'sellers' table
       const { data: sellerData, error: sellerError } = await supabase
         .from('sellers')
         .select('id')
@@ -35,28 +34,29 @@ const SellerDashboard = () => {
         .single();
         
       if (sellerError || !sellerData) {
-        // This user doesn't have a seller profile, so they have no domains.
         setDomains([]);
         setLoading(false);
         return;
       }
       const sellerId = sellerData.id;
 
-      // Now, fetch domains using that sellerId
-      // IMPORTANT: Adjust column names ('id', 'name', 'price', 'is_listed') if yours are different!
       const { data, error } = await supabase
         .from('domains')
         .select('id, name, price')
         .eq('seller_id', sellerId)
-        .eq('is_listed', true) // Only fetch domains that are actively listed
+        .eq('is_listed', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       setDomains(data || []);
       
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching listed domains:", err);
-      setError(err.message || 'Failed to fetch your listed domains.');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to fetch your listed domains.');
+      }
     } finally {
       setLoading(false);
     }
@@ -65,8 +65,7 @@ const SellerDashboard = () => {
   useEffect(() => {
     fetchListedDomains();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-        // Refetch domains on sign in or sign out
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, _session) => { // <-- FIX #1: session is now _session
         if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
             fetchListedDomains();
         }
@@ -82,7 +81,6 @@ const SellerDashboard = () => {
     setError('');
 
     try {
-      // We update `is_listed` to false instead of deleting the row
       const { error } = await supabase
         .from('domains')
         .update({ is_listed: false })
@@ -90,19 +88,22 @@ const SellerDashboard = () => {
       
       if (error) throw error;
 
-      // Update the UI instantly by removing the domain from the list
       setDomains(currentDomains =>
         currentDomains.filter(domain => domain.id !== domainId)
       );
 
-    } catch (err: any) {
-      setError(err.reason || `Failed to delist domain. Please try again.`);
+    } catch (err) {
+      if (err instanceof Error) {
+        // FIX #2: Removed the use of 'any' and '.reason' for a safer, cleaner error message.
+        setError(err.message); 
+      } else {
+        setError('Failed to delist domain. An unknown error occurred.');
+      }
     } finally {
       setDelistingId(null);
     }
   };
 
-  // ... JSX for rendering the dashboard (same as before)
   if (loading) {
     return <p className="text-center text-gray-400 py-8">Loading your domains...</p>;
   }
