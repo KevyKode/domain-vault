@@ -62,12 +62,17 @@ const ListDomainForm = () => {
       // A simple way to refresh the dashboard is to reload the page after a short delay
       setTimeout(() => window.location.reload(), 2000);
 
-    } catch (err: any) {
-      setMessageType('error');
-      setMessage(err.message);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { // Step 1: Catch the error without a type
+  setMessageType('error');
+  // Step 2: Check if it's an object with a 'message' property before using it
+  if (err instanceof Error) {
+    setMessage(err.message);
+  } else {
+    setMessage('An unknown error occurred. Please try again.');
+  }
+} finally {
+  setLoading(false);
+}
   };
 
   return (
