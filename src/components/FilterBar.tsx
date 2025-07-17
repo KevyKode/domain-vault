@@ -1,35 +1,33 @@
 import React from 'react'
-import { Search, Filter, Grid, List } from 'lucide-react'
-import { Domain } from '../lib/supabase'
+import { Search, Filter } from 'lucide-react'
 
 interface FilterBarProps {
-  searchTerm: string
-  onSearchChange: (term: string) => void
-  selectedCategory: string
+  onSearch: (term: string) => void
   onCategoryChange: (category: string) => void
-  sortBy: string
-  onSortChange: (sort: string) => void
-  viewMode: 'grid' | 'list'
-  onViewModeChange: (mode: 'grid' | 'list') => void
-  domains: Domain[]
+  onPriceRangeChange: (range: [number, number]) => void
+  searchTerm: string
+  selectedCategory: string
+  priceRange: [number, number]
 }
 
 export default function FilterBar({
-  searchTerm,
-  onSearchChange,
-  selectedCategory,
+  onSearch,
   onCategoryChange,
-  sortBy,
-  onSortChange,
-  viewMode,
-  onViewModeChange,
-  domains
+  onPriceRangeChange,
+  searchTerm,
+  selectedCategory,
+  priceRange
 }: FilterBarProps) {
-  // Derive unique categories from domains
-  const categories = React.useMemo(() => {
-    const uniqueCategories = new Set(domains.map(domain => domain.category))
-    return Array.from(uniqueCategories).sort()
-  }, [domains])
+  const categories = [
+    'Technology',
+    'E-commerce',
+    'Health',
+    'Finance',
+    'Education',
+    'Entertainment',
+    'Business',
+    'Travel'
+  ]
 
   return (
     <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -42,7 +40,7 @@ export default function FilterBar({
               type="text"
               placeholder="Search domains..."
               value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(e) => onSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -52,7 +50,7 @@ export default function FilterBar({
               <Filter className="h-4 w-4 text-gray-500 mr-2" />
               <span className="text-sm font-medium text-gray-700">Filter:</span>
             </div>
-            
+
             <select
               value={selectedCategory}
               onChange={(e) => onCategoryChange(e.target.value)}
@@ -64,39 +62,19 @@ export default function FilterBar({
               ))}
             </select>
 
-            <select
-              value={sortBy}
-              onChange={(e) => onSortChange(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="newest">Newest First</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onViewModeChange('grid')}
-              className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'grid' 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <Grid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => onViewModeChange('list')}
-              className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'list' 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <List className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Max Price:</span>
+              <input
+                type="range"
+                min="0"
+                max="100000"
+                step="1000"
+                value={priceRange[1]}
+                onChange={(e) => onPriceRangeChange([priceRange[0], parseInt(e.target.value)])}
+                className="w-20"
+              />
+              <span className="text-sm text-gray-600">${priceRange[1].toLocaleString()}</span>
+            </div>
           </div>
         </div>
       </div>
