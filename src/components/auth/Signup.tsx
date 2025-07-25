@@ -38,7 +38,11 @@ export default function Signup() {
     }
 
     try {
-      const { data, error } = await supabase?.auth.signUp({
+      if (!supabase) {
+        throw new Error('Supabase client is not initialized');
+      }
+
+      const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
@@ -62,6 +66,11 @@ export default function Signup() {
         setConfirmPassword('');
         setFirstName('');
         setLastName('');
+        
+        // Optional: Redirect to login after a delay
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
       }
 
     } catch (err) {
